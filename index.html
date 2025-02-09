@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Opaeoh / ArXived</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root[data-theme="light"] {
+            --bg-color: #fff;
+            --text-color: #0f1419;
+            --secondary-text: #536471;
+            --border-color: #eff3f4;
+            --hover-bg: rgba(0, 0, 0, 0.03);
+            --sidebar-hover: rgba(15, 20, 25, 0.1);
+            --input-bg: #fff;
+            --input-border: #cfd9de;
+        }
+
+        :root[data-theme="dark"] {
+            --bg-color: #000;
+            --text-color: #e7e9ea;
+            --secondary-text: #71767b;
+            --border-color: #2f3336;
+            --hover-bg: rgba(255, 255, 255, 0.03);
+            --sidebar-hover: #181818;
+            --input-bg: #000;
+            --input-border: #333639;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            min-height: 100vh;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .sidebar {
+            width: 275px;
+            padding: 20px;
+            position: fixed;
+            height: 100vh;
+            border-right: 1px solid var(--border-color);
+            background-color: var(--bg-color);
+            transition: background-color 0.3s;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            color: var(--text-color);
+        }
+
+        .nav-item {
+            padding: 15px 20px;
+            font-size: 20px;
+            margin: 5px 0;
+            cursor: pointer;
+            border-radius: 30px;
+            transition: background-color 0.2s;
+            color: var(--text-color);
+            text-decoration: none;
+            display: block;
+        }
+
+        .nav-item:hover {
+            background-color: var(--sidebar-hover);
+        }
+
+        .nav-item.active {
+            font-weight: bold;
+            background-color: var(--sidebar-hover);
+        }
+
+        .theme-toggle {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            padding: 10px;
+            border-radius: 50%;
+            border: none;
+            background: none;
+            color: var(--text-color);
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        .theme-toggle:hover {
+            background-color: var(--sidebar-hover);
+        }
+        .teleport-form {
+            padding: 0 20px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .teleport-form.active {
+            display: block;
+        }
+
+        .teleport-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--input-border);
+            border-radius: 20px;
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            margin-bottom: 10px;
+            font-size: 15px;
+            transition: border-color 0.2s;
+        }
+
+        .teleport-input:focus {
+            outline: none;
+            border-color: #1d9bf0;
+        }
+
+        .teleport-button {
+            width: 100%;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 20px;
+            background-color: #181818;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .teleport-button:hover {
+            background-color: #383838;
+        }
+
+        .teleport-button:active {
+            background-color: #383838;
+        }
+        .main-content {
+            margin-left: 275px;
+            flex: 1;
+            border-right: 1px solid var(--border-color);
+            min-width: 600px;
+            max-width: 800px;
+        }
+        .paper {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            transition: background-color 0.2s;
+            display: flex;
+            gap: 12px;
+            position: relative;
+        }
+
+        .paper:hover {
+            background-color: var(--hover-bg);
+        }
+
+        .post-number {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: var(--secondary-text);
+            font-size: 14px;
+            background-color: var(--hover-bg);
+            padding: 4px 8px;
+            border-radius: 12px;
+        }
+
+        .profile-picture {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .paper-content {
+            flex: 1;
+        }
+
+        .paper h2 {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: var(--text-color);
+            padding-right: 40px;
+        }
+
+        .paper-authors {
+            color: var(--secondary-text);
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .paper-summary {
+            color: var(--text-color);
+            margin-bottom: 15px;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+
+        .paper-actions {
+            display: flex;
+            gap: 20px;
+            color: var(--secondary-text);
+        }
+
+        .action-button {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: none;
+            border: none;
+            color: var(--secondary-text);
+            font-size: 14px;
+            padding: 5px 10px;
+            border-radius: 20px;
+        }
+
+        .action-button:hover {
+            color: #f91880;
+            background-color: rgba(249, 24, 128, 0.1);
+        }
+
+        .action-button.liked {
+            color: #f91880;
+        }
+
+        .action-button i {
+            font-size: 18px;
+        }
+
+        .read-more {
+            color: #1d9bf0;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .read-more:hover {
+            text-decoration: underline;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: var(--secondary-text);
+        }
+        ::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+    <script>
+        window.MathJax = {
+            tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
+            svg: { scale: 1.2 }
+        };
+    </script>
+    <script type="text/javascript" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo">ArXived</div>
+        <a href="#" class="nav-item active" data-tab="feed">
+            <i class="fas fa-home"></i> Feed
+        </a>
+        <a href="#" class="nav-item" data-tab="saved">
+            <i class="fas fa-bookmark"></i> Saved
+        </a>
+        <a href="#" class="nav-item" data-tab="teleport">
+            <i class="fas fa-rocket"></i> Teleport
+        </a>
+        <div class="teleport-form" id="teleport-form">
+            <input type="number" class="teleport-input" id="teleport-input" placeholder="Enter post number">
+            <button class="teleport-button" onclick="teleportToPost()">Go to Post</button>
+        </div>
+        <button class="theme-toggle" onclick="toggleTheme()">
+            <i class="fas fa-moon"></i>
+        </button>
+    </div>
+    
+    <div class="main-content">
+        <div id="papers-container"></div>
+        <div class="loading" id="loading">Loading papers...</div>
+    </div>
+
+    <script>
+        let startIndex = 0;
+        let isLoading = false;
+        let currentTab = 'feed';
+        const papersPerPage = 10;
+
+        const savedPapers = JSON.parse(localStorage.getItem('savedPapers') || '[]');
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const isDark = html.getAttribute('data-theme') === 'dark';
+            html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+
+            const icon = document.querySelector('.theme-toggle i');
+            icon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+
+            localStorage.setItem('theme', isDark ? 'light' : 'dark');
+        }
+
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        document.querySelector('.theme-toggle i').className = savedTheme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+
+        function generateGradient() {
+            const hue1 = Math.floor(Math.random() * 360);
+            const hue2 = (hue1 + Math.floor(Math.random() * 180)) % 360;
+            return `linear-gradient(45deg, hsl(${hue1}, 70%, 50%), hsl(${hue2}, 70%, 50%))`;
+        }
+
+        function toggleLike(paperId) {
+            const likeButton = document.querySelector(`[data-paper-id="${paperId}"]`);
+            const likeText = likeButton.querySelector('span');
+            const isLiked = savedPapers.includes(paperId);
+            
+            if (isLiked) {
+                const index = savedPapers.indexOf(paperId);
+                savedPapers.splice(index, 1);
+                likeButton.classList.remove('liked');
+                likeText.textContent = 'Like';
+            } else {
+                savedPapers.push(paperId);
+                likeButton.classList.add('liked');
+                likeText.textContent = 'Liked';
+            }
+            
+            localStorage.setItem('savedPapers', JSON.stringify(savedPapers));
+            
+            if (currentTab === 'saved') {
+                displaySavedPapers();
+            }
+        }
+
+        function displaySavedPapers() {
+            const container = document.getElementById('papers-container');
+            container.innerHTML = '';
+            
+            const savedHtml = savedPapers.map(paperId => {
+                const paperData = JSON.parse(localStorage.getItem(`paper_${paperId}`));
+                if (!paperData) return '';
+                
+                return createPaperHtml(paperData, true);
+            }).join('');
+            
+            container.innerHTML = savedHtml || '<div class="paper">No saved papers yet . Like a paper in your feed to save a paper . </div>';
+        }
+
+        function createPaperHtml(paper, isSaved = false) {
+            const isLiked = savedPapers.includes(paper.id);
+            const gradient = paper.gradient || generateGradient();
+            if (!paper.gradient) {
+                paper.gradient = gradient;
+                localStorage.setItem(`paper_${paper.id}`, JSON.stringify(paper));
+            }
+            
+            return `
+                <div class="paper">
+                    <div class="post-number">#${paper.postNumber}</div>
+                    <div class="profile-picture" style="background: ${gradient}"></div>
+                    <div class="paper-content">
+                        <h2>${paper.title}</h2>
+                        <p class="paper-authors">${paper.authors}</p>
+                        <p class="paper-summary">${paper.summary}</p>
+                        <div class="paper-actions">
+                            <button class="action-button ${isLiked ? 'liked' : ''}" 
+                                    onclick="toggleLike('${paper.id}')"
+                                    data-paper-id="${paper.id}">
+                                <i class="fas fa-heart"></i>
+                                <span>${isLiked ? 'Liked' : 'Like'}</span>
+                            </button>
+                            <a href="${paper.link}" target="_blank" class="read-more">
+                                Read on arXiv <i class="fas fa-external-link-alt"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function fetchPapers() {
+            if (isLoading || currentTab === 'saved') return;
+            
+            isLoading = true;
+            document.getElementById('loading').style.display = 'block';
+            
+            const apiUrl = `https://export.arxiv.org/api/query?search_query=all&start=${startIndex}&max_results=${papersPerPage}`;
+            
+            try {
+                const response = await fetch(apiUrl);
+                const text = await response.text();
+                const parser = new DOMParser();
+                const xml = parser.parseFromString(text, "text/xml");
+                const entries = xml.getElementsByTagName("entry");
+                
+                if (!entries.length) {
+                    document.getElementById("loading").innerHTML = "No papers available or Error loading papers";
+                    return;
+                }
+                
+                let papersHtml = '';
+                
+                for (const entry of entries) {
+                    const paperData = {
+                        id: entry.getElementsByTagName("id")[0].textContent,
+                        title: entry.getElementsByTagName("title")[0].textContent,
+                        summary: entry.getElementsByTagName("summary")[0].textContent,
+                        link: entry.getElementsByTagName("id")[0].textContent,
+                        authors: Array.from(entry.getElementsByTagName("author"))
+                            .map(author => author.getElementsByTagName("name")[0].textContent)
+                            .join(", "),
+                        gradient: generateGradient(),
+                        postNumber: startIndex + Array.from(entries).indexOf(entry)
+                    };
+                    
+                    localStorage.setItem(`paper_${paperData.id}`, JSON.stringify(paperData));
+                    papersHtml += createPaperHtml(paperData);
+                }
+                
+                document.getElementById('papers-container').insertAdjacentHTML('beforeend', papersHtml);
+                
+                if (window.MathJax) {
+                    window.MathJax.typesetPromise();
+                }
+                
+                startIndex += papersPerPage;
+                
+            } catch (error) {
+                console.error("Error fetching papers:", error);
+                document.getElementById("loading").innerHTML = "Error loading papers. Please try again.";
+            } finally {
+                isLoading = false;
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
+
+        function teleportToPost() {
+            const postNumber = parseInt(document.getElementById('teleport-input').value);
+            if (isNaN(postNumber) || postNumber < 0) {
+                alert('Please enter a valid post number');
+                return;
+            }
+
+            startIndex = postNumber;
+            document.getElementById('papers-container').innerHTML = '';
+
+            currentTab = 'feed';
+            document.querySelectorAll('.nav-item').forEach(nav => {
+                nav.classList.remove('active');
+            });
+            document.querySelector('[data-tab="feed"]').classList.add('active');
+
+            document.getElementById('teleport-form').classList.remove('active');
+
+            fetchPapers();
+        }
+
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                const tab = e.target.closest('.nav-item').dataset.tab;
+                
+                document.querySelectorAll('.nav-item').forEach(nav => {
+                    nav.classList.remove('active');
+                });
+                e.target.closest('.nav-item').classList.add('active');
+
+                const teleportForm = document.getElementById('teleport-form');
+                if (tab === 'teleport') {
+                    teleportForm.classList.add('active');
+                    return;
+                } else {
+                    teleportForm.classList.remove('active');
+                }
+                
+                currentTab = tab;
+                document.getElementById('papers-container').innerHTML = '';
+                document.getElementById('loading').style.display = 'none';
+                
+                if (tab === 'feed') {
+                    startIndex = 0;
+                    fetchPapers();
+                } else if (tab === 'saved') {
+                    displaySavedPapers();
+                }
+            });
+        });
+
+        fetchPapers();
+
+        window.addEventListener('scroll', () => {
+            if (currentTab === 'feed' && 
+                (window.innerHeight + window.scrollY) >= document.body.offsetHeight - 1000) {
+                fetchPapers();
+            }
+        });
+        
+        document.getElementById('teleport-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                teleportToPost();
+            }
+        });
+    </script>
+</body>
+</html>
